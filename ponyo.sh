@@ -9,6 +9,7 @@ ENVFILE=/home/admin/Codes/ponyo_ws/install/setup.bash
 if [ -f ${ENVFILE} ]; then
     #環境変数読み込み
     echo "Loading ROS2 Env..."
+    source /opt/ros/humble/setup.bash
     source ${ENVFILE}
     if [ -d ${LOGDIR} ]; then
         echo "ROS2 Launching..."
