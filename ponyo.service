@@ -1,0 +1,18 @@
+[Unit]
+Description=Ponyo bringup
+After=local-fs.target
+ConditionPathExists=/home/admin/Codes/ponyo_ws/src/ponyo
+
+[Service]
+ExecStart=/home/admin/Codes/ponyo_ws/src/ponyo/ponyo.sh
+ExecStop=/bin/kill ${MAINPID}
+Restart=on-failure
+StartLimitInterval=10
+StartLimitBurst=3
+KillMode=mixed
+Type=simple
+User=admin
+Group=admin
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,122 @@
+<!-- Web GUI interface to control ROS robot-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Load bootstrap -->
+    <link rel="stylesheet" href="bootstrap.min.css">
+    <script src="jquery.min.js"></script>
+    <script src="bootstrap.min.js"></script>
+    <!-- create sliders to control joint angles -->
+    <script src="bootstrap-slider.js"></script>
+    <link rel="stylesheet" href="bootstrap-slider.css">
+
+    <!-- Load ROS -->
+    <script src="roslib.js"></script>
+
+    <!-- initialize roslibjs -->
+    <script>
+        // Create a connection to the rosbridge WebSocket server.
+        var ros = new ROSLIB.Ros({
+            url: 'ws://192.168.200.1:9090'
+        });
+
+        // Create a connection to the rosbridge WebSocket server.
+        ros.on('connection', function () {
+            console.log('Connected to websocket server.');
+        });
+
+        // If there is an error on the backend, an 'error' emit will be emitted.
+        ros.on('error', function (error) {
+            console.log('Error connecting to websocket server: ', error);
+        });
+
+        // Find out exactly when we made a connection.
+        ros.on('connection', function () {
+            console.log('Connection made!');
+        });
+
+        // Find out exactly when we made a connection.
+        ros.on('close', function () {
+            console.log('Connection closed.');
+        });
+
+        // Create a Topic object to publish to joint angles
+        var joint_pub = new ROSLIB.Topic({
+            ros: ros,
+            name: '/set_position',
+            messageType: 'dynamixel_sdk_custom_interfaces/SetPosition'
+        });
+        var value = new ROSLIB.Message({
+            id: 1,
+            position: 0
+        });
+        joint_pub.publish(value);
+        var value = new ROSLIB.Message({
+            id: 2,
+            position: 2048
+        });
+        joint_pub.publish(value);
+
+    </script>
+
+    <style>
+        .range {
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Joint Angles</h2>
+        <!-- Create a slider to set the joint angle value -->
+        <label class="form-label" for="customRange1">Joint 1</label>
+        <div class="range">
+            <input type="range" class="form-range" id="customRange1" min="0" , max="4096" />
+            <script>
+                <!-- Set callback when the slider value is changed-->
+                $('#customRange1').on('input', function () {
+                    // value is float
+                    var value = parseFloat(this.value);
+                    // Create a message object
+                    var joint1 = new ROSLIB.Message({
+                        id: 1,
+                        position: value
+                    });
+                    console.log(joint1);
+                    // Publish the message to the chatter topic.
+                    joint_pub.publish(joint1);
+                });
+            </script>
+        </div>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <label class="form-label" for="customRange2">Joint 2</label>
+        <div class="range">
+            <!-- Change the value continuously while sliding -->
+            <input type="range" class="form-range" id="customRange2" min="1024" , max="3096" />
+            <script>
+                <!-- Set callback when the slider value is changed-->
+                $('#customRange2').on('input', function () {
+                    // value is float
+                    var value = parseFloat(this.value);
+                    // Create a message object
+                    var joint2 = new ROSLIB.Message({
+                        id: 2,
+                        position: value
+                    });
+                    console.log(joint2);
+                    // Publish the message to the chatter topic.
+                    joint_pub.publish(joint2);
+                });
+            </script>
+        </div>
+    </div>
+</body>
+
+</html>
